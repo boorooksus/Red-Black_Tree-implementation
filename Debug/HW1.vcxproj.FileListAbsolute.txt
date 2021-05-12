@@ -1,2 +1,4 @@
 C:\Users\booro\Desktop\HW1\Debug\HW1.exe
 C:\Users\booro\Desktop\HW1\Debug\HW1.pdb
+C:\Users\booro\Desktop\Red-Black_Tree-implementation\Debug\HW1.exe
+C:\Users\booro\Desktop\Red-Black_Tree-implementation\Debug\HW1.pdb

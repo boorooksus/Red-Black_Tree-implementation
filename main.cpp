@@ -18,21 +18,22 @@ struct pinfo {
 	record* records = NULL;
 };
 
-struct node {
+struct treeNode {
 	pinfo* patient = NULL;
 	int dept;
 	int color;
-	node* parent;
-	node* left = NULL;
-	node* right = NULL;
+	treeNode* parent;
+	treeNode* left = NULL;
+	treeNode* right = NULL;
 };
 
 int T;
 char cmd;
-node root;
+treeNode root = { NULL, 0, BLACK, NULL, NULL, NULL };
 
-void insertPatient();
-node findPatient(int pid);
+void insertPatient(pinfo p);
+void doubleRed(treeNode* node);
+//treeNode findPatient(int pid);
 
 int main() {
 	cin >> T;
@@ -51,36 +52,66 @@ int main() {
 
 }
 
-void insertPatient(node cur, int dept, pinfo p) {
-	if (!cur.patient) {
-		// node child = { &p, dept, RED, cur.parent, NULL, NULL };
-		cur.patient = &p;
-		cout << dept << " " << 1 << "\n";
-		return;
-	}
+void insertPatient(pinfo p) {
 
-	// 수정할 것: 현재 자식 노드에 추가하는 방식이 아닌
-	// 현재 노드의 pinfo가 널이면 여기에 삽입하는 것으로 수정할것!!!!!
+	treeNode *cur = &root;
+	int curDept = 0;
 
-	if (p.pid == cur.patient->pid) {
-		// the patient is already exist
-		cout << cur.parent->dept << " " << 0 << "\n";
-		return;
-	}
-	else if (p.pid < cur.patient->pid) {
-		// 트리의 좌측 서브트리로 보냄
-		if (cur.left) {
-			insertPatient(*cur.left, dept + 1, p);
+	while (cur->patient) {
+		if (p.pid == cur->patient->pid) {
+			// when the patient is already exist
+			cout << cur->dept << " " << 0 << "\n";
+			return;
+		}
+		else if (p.pid < cur->patient->pid) {
+			// 트리의 좌측 서브트리로 보냄
+			cur = cur->left;
 		}
 		else {
-			node child = {&p, dept + 1, RED, &cur, NULL, NULL };
-			cur.left = &child;
-			cout << dept + 1 << " " << 1 << "\n";
+			// 트리의 우측 서브트리로 보냄
+			cur = cur->right;
 		}
-	}
-	else {
-		// 트리의 우측 서브트리로 보냄
-		cur = *cur.right;
+		curDept++;
 	}
 
+	cur->patient = &p;
+	if (cur->parent) {
+		// 루트 노드가 아닌 경우
+		cur->color = RED;
+	}
+	else {
+		// 루트 노드인 경우
+		cur->color = BLACK;
+	}
+	treeNode left = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
+	treeNode right = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
+	cur->left = &left;
+	cur->right = &right;
+
+	doubleRed(cur);
+
+	cout << curDept << " " << 1 << "\n";
+}
+
+// double red handling function
+void doubleRed(treeNode * node) {
+
+	// double red가 아닌 경우 리턴
+	if (!node->parent || node->parent->color == BLACK) {
+		return;
+	}
+
+	// uncle 노드
+	treeNode uncle;
+	if (node->parent == node->parent->parent->right)
+		uncle = *node->parent->parent->left;
+	else
+		uncle = *node->parent->parent->right;
+
+
+	// uncle 노드의 색에 따라 restructuring 또는 recoloring
+	if (uncle.color == BLACK) {
+		// Restructuring
+		
+	}
 }
