@@ -31,7 +31,7 @@ int T;
 char cmd;
 treeNode root = { NULL, 0, BLACK, NULL, NULL, NULL };
 
-void insertPatient(pinfo p);
+void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
 //treeNode findPatient(int pid);
 
@@ -40,30 +40,30 @@ int main() {
 	while (T--) {
 		cin >> cmd;
 		if (cmd == 'I') {
-			pinfo p;
-			record r;
-			cin >> p.pid >> p.name >> p.tel >> p.ax >> p.ay
-				>> r.disease >> r.cost;
+			pinfo *p = new pinfo;
+			record* r = new record;
+			cin >> p->pid >> p->name >> p->tel >> p->ax >> p->ay
+				>> r->disease >> r->cost;
 
-			p.records = &r;
+			p->records = r;
 			insertPatient(p);
 		}
 	}
 
 }
 
-void insertPatient(pinfo p) {
+void insertPatient(pinfo *p) {
 
 	treeNode *cur = &root;
 	int curDept = 0;
 
 	while (cur->patient) {
-		if (p.pid == cur->patient->pid) {
+		if (p->pid == cur->patient->pid) {
 			// when the patient is already exist
 			cout << cur->dept << " " << 0 << "\n";
 			return;
 		}
-		else if (p.pid < cur->patient->pid) {
+		else if (p->pid < cur->patient->pid) {
 			// 트리의 좌측 서브트리로 보냄
 			cur = cur->left;
 		}
@@ -74,7 +74,7 @@ void insertPatient(pinfo p) {
 		curDept++;
 	}
 
-	cur->patient = &p;
+	cur->patient = p;
 	if (cur->parent) {
 		// 루트 노드가 아닌 경우
 		cur->color = RED;
@@ -83,10 +83,14 @@ void insertPatient(pinfo p) {
 		// 루트 노드인 경우
 		cur->color = BLACK;
 	}
-	treeNode left = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
-	treeNode right = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
-	cur->left = &left;
-	cur->right = &right;
+
+	treeNode* left = new treeNode;
+	*left = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
+	treeNode* right = new treeNode;
+	*right = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
+
+	cur->left = left;
+	cur->right = right;
 
 	doubleRed(cur);
 
@@ -101,17 +105,20 @@ void doubleRed(treeNode * node) {
 		return;
 	}
 
+	treeNode* grand = node->parent->parent; // grand 노드
 	// uncle 노드
-	treeNode uncle;
-	if (node->parent == node->parent->parent->right)
-		uncle = *node->parent->parent->left;
-	else
-		uncle = *node->parent->parent->right;
-
+	treeNode* uncle = (node->parent != grand->left) ?
+		grand->left : grand->right;
 
 	// uncle 노드의 색에 따라 restructuring 또는 recoloring
-	if (uncle.color == BLACK) {
+	if (uncle->color == BLACK) {
 		// Restructuring
-		
+		cout << "restruct\n";
 	}
+	else {
+		// Recoloring
+		cout << "recoloring\n";
+	}
+
+	return;
 }
