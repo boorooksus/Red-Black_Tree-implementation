@@ -3,12 +3,14 @@
 #define RED 1
 using namespace std;
 
+// 진료 기록
 struct record {
 	string disease;
-	int cost;
+	int cost = 0;
 	record* next = NULL;
 };
 
+// 환자 정보
 struct pinfo {
 	int pid = 0;
 	string name = "";
@@ -18,10 +20,11 @@ struct pinfo {
 	record* records = NULL;
 };
 
+// 트리 노드
 struct treeNode {
 	pinfo* patient = NULL;
-	int dept;
-	int color;
+	int dept = 0;
+	int color = BLACK;
 	treeNode* parent;
 	treeNode* left = NULL;
 	treeNode* right = NULL;
@@ -75,14 +78,8 @@ void insertPatient(pinfo *p) {
 	}
 
 	cur->patient = p;
-	if (cur->parent) {
-		// 루트 노드가 아닌 경우
-		cur->color = RED;
-	}
-	else {
-		// 루트 노드인 경우
-		cur->color = BLACK;
-	}
+	// 루트 노드인 경우 black, 아닌 경우 red
+	cur->color = (cur->parent) ? RED : BLACK;
 
 	treeNode* left = new treeNode;
 	*left = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
@@ -109,11 +106,36 @@ void doubleRed(treeNode * node) {
 	// uncle 노드
 	treeNode* uncle = (node->parent != grand->left) ?
 		grand->left : grand->right;
+	treeNode* parent = node->parent;
 
 	// uncle 노드의 색에 따라 restructuring 또는 recoloring
 	if (uncle->color == BLACK) {
 		// Restructuring
-		cout << "restruct\n";
+		
+		treeNode *x, *y, *z;
+
+		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
+			x = grand;
+			y = node;
+			z = parent;
+		}
+		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
+			x = parent;
+			y = node;
+			z = grand;
+		}
+		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
+			x = node;
+			y = parent;
+			z = grand;
+		}
+		else {
+			x = grand;
+			y = parent;
+			z = node;
+		}
+
+
 	}
 	else {
 		// Recoloring
