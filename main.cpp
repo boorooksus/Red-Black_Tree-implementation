@@ -3,36 +3,36 @@
 #define RED 1
 using namespace std;
 
-// Áø·á ±â·Ï
+// ì§„ë£Œ ê¸°ë¡
 struct record {
 	string disease;
 	int cost = 0;
-	record* next = NULL;
+	record* next = nullptr;
 };
 
-// È¯ÀÚ Á¤º¸
+// í™˜ìž ì •ë³´
 struct pinfo {
 	int pid = 0;
-	string name = "";
+	string name;
 	int tel = 0;
 	int ax = 0;
 	int ay = 0;
-	record* records = NULL;
+	record* records = nullptr;
 };
 
-// Æ®¸® ³ëµå
+// íŠ¸ë¦¬ ë…¸ë“œ
 struct treeNode {
-	pinfo* patient = NULL;
+	pinfo* patient = nullptr;
 	int dept = 0;
 	int color = BLACK;
-	treeNode* parent;
-	treeNode* left = NULL;
-	treeNode* right = NULL;
+	treeNode* parent= nullptr;
+	treeNode* left = nullptr;
+	treeNode* right = nullptr;
 };
 
 int T;
 char cmd;
-treeNode root = { NULL, 0, BLACK, NULL, NULL, NULL };
+treeNode root = { nullptr, 0, BLACK, nullptr, nullptr, nullptr };
 
 void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
@@ -43,8 +43,8 @@ int main() {
 	while (T--) {
 		cin >> cmd;
 		if (cmd == 'I') {
-			pinfo *p = new pinfo;
-			record* r = new record;
+			auto *p = new pinfo;
+			auto* r = new record;
 			cin >> p->pid >> p->name >> p->tel >> p->ax >> p->ay
 				>> r->disease >> r->cost;
 
@@ -67,24 +67,24 @@ void insertPatient(pinfo *p) {
 			return;
 		}
 		else if (p->pid < cur->patient->pid) {
-			// Æ®¸®ÀÇ ÁÂÃø ¼­ºêÆ®¸®·Î º¸³¿
+			// íŠ¸ë¦¬ì˜ ì¢Œì¸¡ ì„œë¸ŒíŠ¸ë¦¬ë¡œ ë³´ëƒ„
 			cur = cur->left;
 		}
 		else {
-			// Æ®¸®ÀÇ ¿ìÃø ¼­ºêÆ®¸®·Î º¸³¿
+			// íŠ¸ë¦¬ì˜ ìš°ì¸¡ ì„œë¸ŒíŠ¸ë¦¬ë¡œ ë³´ëƒ„
 			cur = cur->right;
 		}
 		curDept++;
 	}
 
 	cur->patient = p;
-	// ·çÆ® ³ëµåÀÎ °æ¿ì black, ¾Æ´Ñ °æ¿ì red
+	// ë£¨íŠ¸ ë…¸ë“œì¸ ê²½ìš° black, ì•„ë‹Œ ê²½ìš° red
 	cur->color = (cur->parent) ? RED : BLACK;
 
-	treeNode* left = new treeNode;
-	*left = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
-	treeNode* right = new treeNode;
-	*right = { NULL, curDept + 1, BLACK, cur, NULL, NULL };
+	auto* left = new treeNode;
+	*left = { nullptr, curDept + 1, BLACK, cur, nullptr, nullptr };
+	auto* right = new treeNode;
+	*right = { nullptr, curDept + 1, BLACK, cur, nullptr, nullptr };
 
 	cur->left = left;
 	cur->right = right;
@@ -97,60 +97,60 @@ void insertPatient(pinfo *p) {
 // double red handling function
 void doubleRed(treeNode * node) {
 
-	// double red°¡ ¾Æ´Ñ °æ¿ì ¸®ÅÏ
+	// double redê°€ ì•„ë‹Œ ê²½ìš° ë¦¬í„´
 	if (!node->parent || node->parent->color == BLACK) {
 		return;
 	}
 
-	treeNode* grand = node->parent->parent; // grand ³ëµå
-	// uncle ³ëµå
+	treeNode* grand = node->parent->parent; // grand ë…¸ë“œ
+	// uncle ë…¸ë“œ
 	treeNode* uncle = (node->parent != grand->left) ?
 		grand->left : grand->right;
 	treeNode* parent = node->parent;
 
-	// uncle ³ëµåÀÇ »ö¿¡ µû¶ó restructuring ¶Ç´Â recoloring
+	// uncle ë…¸ë“œì˜ ìƒ‰ì— ë”°ë¼ restructuring ë˜ëŠ” recoloring
 	if (uncle->color == BLACK) {
 		// Restructuring
-		
-		treeNode *x, *y, *z;
-		treeNode* greatGrand = grand->parent;
 
-		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// right-left case
-
-			grand->parent = node;
-			grand->right = node->left;
-			parent->parent = node;
-			parent->left = node->right;
-			node->left = grand;
-			node->right = parent;
-			node->parent = greatGrand;
-		}
-		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
-			// left-right case
-
-			grand->parent = node;
-			grand->left = node->right;
-			parent->parent = node;
-			parent->right = node->left;
-			node->parent = greatGrand;
-			node->left = parent;
-			node->right = grand;
-		}
-		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// left-left case
-
-			grand->parent = parent;
-			grand->left = parent->right;
-			parent->parent = greatGrand;
-			parent->left = node->right;
-
-		}
-		else {
-			x = grand;
-			y = parent;
-			z = node;
-		}
+//		treeNode *x, *y, *z;
+//		treeNode* greatGrand = grand->parent;
+//
+//		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
+//			// right-left case
+//
+//			grand->parent = node;
+//			grand->right = node->left;
+//			parent->parent = node;
+//			parent->left = node->right;
+//			node->left = grand;
+//			node->right = parent;
+//			node->parent = greatGrand;
+//		}
+//		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
+//			// left-right case
+//
+//			grand->parent = node;
+//			grand->left = node->right;
+//			parent->parent = node;
+//			parent->right = node->left;
+//			node->parent = greatGrand;
+//			node->left = parent;
+//			node->right = grand;
+//		}
+//		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
+//			// left-left case
+//
+//			grand->parent = parent;
+//			grand->left = parent->right;
+//			parent->parent = greatGrand;
+//			parent->left = node->right;
+//
+//		}
+//		else {
+//			x = grand;
+//			y = parent;
+//			z = node;
+//		}
 
 
 	}
@@ -159,5 +159,4 @@ void doubleRed(treeNode * node) {
 		cout << "recoloring\n";
 	}
 
-	return;
-}
+	}
