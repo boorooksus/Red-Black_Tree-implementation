@@ -38,13 +38,15 @@ treeNode *root = &rootNode;
 void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
 void updateDepts(treeNode* node, int curDept);
-//treeNode findPatient(int pid);
+void findPatient(int pid);
 
 int main() {
 	cin >> T;
 	while (T--) {
 		cin >> cmd;
 		if (cmd == 'I') {
+		    // 신규 가입
+
 			auto *p = new pinfo;
 			auto* r = new record;
 			cin >> p->pid >> p->name >> p->tel >> p->ax >> p->ay
@@ -53,10 +55,17 @@ int main() {
 			p->records = r;
 			insertPatient(p);
 		}
+		else if (cmd == 'F'){
+		    // 환자 검색
+		    int k;
+		    cin >> k;
+		    findPatient(k);
+		}
 	}
 
 }
 
+// 신규 가입 함수
 void insertPatient(pinfo *p) {
 
 	treeNode *cur = root;
@@ -117,7 +126,7 @@ void doubleRed(treeNode * node) {
 		treeNode* greatGrand = grand->parent;
 
 		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// right-left case
+			// case1: right-left
 
 			grand->parent = node;
 			grand->right = node->left;
@@ -146,7 +155,7 @@ void doubleRed(treeNode * node) {
 
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
-			// left-right case
+			// case1: left-right
 
 			grand->parent = node;
 			grand->left = node->right;
@@ -174,7 +183,7 @@ void doubleRed(treeNode * node) {
                 root = node;
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// left-left case
+			// case3: left-left
 
 			grand->parent = parent;
 			grand->left = parent->right;
@@ -197,7 +206,7 @@ void doubleRed(treeNode * node) {
 
 		}
 		else {
-            // right-right case
+            // case4: right-right
 
             grand->parent = parent;
             grand->right = parent->left;
@@ -246,4 +255,30 @@ void updateDepts(treeNode* node, int curDept){
     node->dept = curDept;
     updateDepts(node->left, curDept + 1);
     updateDepts(node->right, curDept + 1);
+}
+
+// 환자 검색 함수
+void findPatient(int pid){
+    treeNode *cur = root;
+
+    // 환자 정보를 찾거나 리프 노드에 도달할 때까지 탐색
+    while(cur->patient){
+        if (pid < cur->patient->pid){
+            // 환자 id가 현재 노드의 id 보다 작을 때
+            cur = cur->left;
+        }
+        else if (pid > cur->patient->pid){
+            // 환자 id가 현재 노드의 id 보다 클 때
+            cur = cur->right;
+        }
+        else{
+            // 환자 정보를 찾았을 때
+            cout << cur->dept << " " << cur->patient->name << " "
+            << cur->patient->tel << " " << cur->patient->ax << " "
+            << cur->patient->ay << "\n";
+            return;
+        }
+    }
+
+    cout << "Not found\n";
 }
