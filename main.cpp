@@ -113,21 +113,38 @@ void doubleRed(treeNode * node) {
 		// Restructuring
 		
 		treeNode *x, *y, *z;
+		treeNode* greatGrand = grand->parent;
 
 		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			x = grand;
-			y = node;
-			z = parent;
+			// right-left case
+
+			grand->parent = node;
+			grand->right = node->left;
+			parent->parent = node;
+			parent->left = node->right;
+			node->left = grand;
+			node->right = parent;
+			node->parent = greatGrand;
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
-			x = parent;
-			y = node;
-			z = grand;
+			// left-right case
+
+			grand->parent = node;
+			grand->left = node->right;
+			parent->parent = node;
+			parent->right = node->left;
+			node->parent = greatGrand;
+			node->left = parent;
+			node->right = grand;
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			x = node;
-			y = parent;
-			z = grand;
+			// left-left case
+
+			grand->parent = parent;
+			grand->left = parent->right;
+			parent->parent = greatGrand;
+			parent->left = node->right;
+
 		}
 		else {
 			x = grand;
