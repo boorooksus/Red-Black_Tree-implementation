@@ -37,19 +37,17 @@ treeNode *root = &rootNode;
 
 void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
-void updateDepts(treeNode* node, int curDept);
+void updateDept(treeNode* node, int curDept);
 treeNode *findPatient(int pid);
 void addRecord(int pid, record * treat);
 int findDisease(treeNode* node, const string& disease);
 void deleteTree(treeNode* node);
+int check(treeNode* node);
 
 int main() {
 	cin >> T;
 	while (T--) {
 		cin >> cmd;
-
-		if(T == 100 - 22)
-		    cout << "hi\n";
 
 		if (cmd == 'I') {
 		    // 신규 가입
@@ -61,6 +59,8 @@ int main() {
 
 			p->records = r;
 			insertPatient(p);
+
+            check(root);
 		}
 		else if (cmd == 'F'){
 		    // 환자 검색
@@ -286,7 +286,7 @@ void doubleRed(treeNode * node) {
             }
             parent->left = grand;
             parent->left->parent = parent;
-            parent->color = RED;
+            parent->color = BLACK;
 
             if (grand->dept == 0)
                 // 전체 트리의 루트가 바뀐경우 전역 변수 재설정
@@ -294,12 +294,8 @@ void doubleRed(treeNode * node) {
 
         }
 
-		// 추가로 생성된 더블 레드 확인
-        doubleRed(grand->left);
-        doubleRed(grand->right);
-
         // 각 노드의 dept 재설정
-        updateDepts(root, 0);
+        updateDept(root, 0);
 	}
 	else {
 		// Recoloring
@@ -319,14 +315,14 @@ void doubleRed(treeNode * node) {
 }
 
 // 트리에서 노드들의 깊이를 업데이트하는 함수
-void updateDepts(treeNode* node, int curDept){
+void updateDept(treeNode* node, int curDept){
     if(!node)
         return;
 
     node->dept = curDept;  // 현재 노드의 깊이 업데이트
     // 서브 트리의 깊이 업데이트
-    updateDepts(node->left, curDept + 1);
-    updateDepts(node->right, curDept + 1);
+    updateDept(node->left, curDept + 1);
+    updateDept(node->right, curDept + 1);
 }
 
 // 환자 검색 함수
@@ -409,4 +405,28 @@ void deleteTree(treeNode* node){
     deleteTree(node->right);
 
     delete node;
+}
+
+int check(treeNode* node){
+    if(!node->patient)
+        return 0;
+
+    if(node->color == RED){
+        if(node->left->color == RED)
+            cout << node->left->dept << " Double RED!!======================\n";
+        if(node->right->color == RED)
+            cout << node->right->dept << "Double RED!!======================\n";
+    }
+
+    int left = check(node->left);
+    int right = check(node->right);
+
+    if (left - right > 1 || left - right < -1){
+        cout << "Not BST!!!!!!================\n";
+    }
+
+    if (left < right)
+        left = right;
+
+    return left + 1;
 }
