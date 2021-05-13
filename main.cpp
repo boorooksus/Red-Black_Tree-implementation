@@ -40,6 +40,8 @@ void doubleRed(treeNode* node);
 void updateDepts(treeNode* node, int curDept);
 treeNode *findPatient(int pid);
 void addRecord(int pid, record * treat);
+int findDisease(treeNode* node, const string& disease);
+void deleteTree(treeNode* node);
 
 int main() {
 	cin >> T;
@@ -84,10 +86,20 @@ int main() {
 
             addRecord(k, treat);
 		}
+		else if (cmd == 'E'){
+		    // 유행병 조사
+
+		    string disease;
+		    cin >> disease;
+
+		    cout << findDisease(root, disease) << "\n";
+		}
 		else{
 		    cout << "Wrong Command\n";
 		}
 	}
+	// 할당된 메모리 제거
+    // deleteTree(root);
 
 }
 
@@ -114,10 +126,12 @@ void insertPatient(pinfo *p) {
 		curDept++;
 	}
 
+	// 현재 노드에 환자 정보 추가
 	cur->patient = p;
 	// 루트 노드인 경우 black, 아닌 경우 red
 	cur->color = (cur->parent) ? RED : BLACK;
 
+	// 새로운 리프 노드 생성 후 연결
 	auto* left = new treeNode;
 	*left = { nullptr, curDept + 1, BLACK, cur, nullptr, nullptr };
 	auto* right = new treeNode;
@@ -126,6 +140,7 @@ void insertPatient(pinfo *p) {
 	cur->left = left;
 	cur->right = right;
 
+	// 더블 레드 확인
 	doubleRed(cur);
 
 	cout << cur->dept << " " << 1 << "\n";
@@ -151,49 +166,61 @@ void doubleRed(treeNode * node) {
 
 		treeNode* greatGrand = grand->parent;
 
+		// gand 노드의 자식과 손자 노드 위치에 따라 case 4가지로 나누어 처리
 		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// case1: right-left
+			// case1: right-left case
 
+            // grand node를 현재 서브트리 루트의 왼쪽 자식으로 설정
 			grand->parent = node;
 			grand->right = node->left;
 			grand->right->parent = grand;
 			grand->color = RED;
 
+			// parent node를 현재 서브트리 루트의 오른쪽 자식으로 설정
 			parent->parent = node;
 			parent->left = node->right;
 			parent->left->parent = parent;
 
+			// 추가된 노드를 현재 서브트리의 루트로 설정
 			node->left = grand;
 			node->left->parent = node;
 			node->right = parent;
 			node->right->parent = node;
 			node->parent = greatGrand;
 			if (greatGrand) {
+                // great grand node의 자식 노드 주소 재설정
                 if(greatGrand->left == grand)
+                    // great grand node의 좌측 자식인 경우
                     greatGrand->left = node;
                 else
+                    // great grand node의 우측 자식인 경우
                     greatGrand->right = node;
             }
             node->color = BLACK;
 
+			// 전체 트리의 루트 노드가 바뀐 경우 전역 변수 재설정
 			if (grand->dept == 0)
 			    root = node;
 
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
-			// case1: left-right
+			// case2: left-right case
 
-			grand->parent = node;
+            // grand node를 현재 서브트리의 루트로 설정
+            grand->parent = node;
 			grand->left = node->right;
 			grand->left->parent = grand;
 			grand->color = RED;
 
-			parent->parent = node;
+            // parent node를 현재 서브트리 루트의 왼쪽 자식으로 설정
+            parent->parent = node;
 			parent->right = node->left;
 			parent->right->parent = parent;
 
-			node->parent = greatGrand;
+            // 추가된 node를 현재 서브트리 루트의 우측 자식으로 설정
+            node->parent = greatGrand;
             if (greatGrand) {
+                // great grand node의 자식 노드 주소 재설정
                 if(greatGrand->left == grand)
                     greatGrand->left = node;
                 else
@@ -205,19 +232,22 @@ void doubleRed(treeNode * node) {
 			node->right->parent = node;
 			node->color = BLACK;
 
+			// 전체 트리의 루트가 바뀐 경우 전역 변수 재설정
             if (grand->dept == 0)
                 root = node;
 		}
 		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
-			// case3: left-left
+			// case3: left-left case
 
-			grand->parent = parent;
+            // grand node를 현재 서브트리 루트의 우측 자식으로 설정
 			grand->left = parent->right;
 			grand->left->parent = grand;
 			grand->color = RED;
 
-			parent->parent = greatGrand;
+            // parent node를 현재 서브트리 루트의 좌측 자식으로 설정
+            parent->parent = greatGrand;
             if (greatGrand) {
+                // great grand node의 자식 노드 주소 재설정
                 if(greatGrand->left == grand)
                     greatGrand->left = parent;
                 else
@@ -225,6 +255,8 @@ void doubleRed(treeNode * node) {
             }
 			parent->left = node->right;
 			parent->left->parent = parent;
+			parent->right = grand;
+			parent->right->parent = parent;
 			parent->color = BLACK;
 
             if (grand->dept == 0)
@@ -232,15 +264,17 @@ void doubleRed(treeNode * node) {
 
 		}
 		else {
-            // case4: right-right
+            // case4: right-right case
 
-            grand->parent = parent;
+            // grand node를 현재 서브트리 루트의 좌측 자식으로 설정
             grand->right = parent->left;
             grand->right->parent = grand;
             grand->color = RED;
 
+            // parent node를 현재 서브트리 루트로 설정
             parent->parent = greatGrand;
             if (greatGrand) {
+                // great grand 노드의 자식 주소로 설정
                 if(greatGrand->left == grand)
                     greatGrand->left = parent;
                 else
@@ -251,9 +285,16 @@ void doubleRed(treeNode * node) {
             parent->color = RED;
 
             if (grand->dept == 0)
+                // 전체 트리의 루트가 바뀐경우 전역 변수 재설정
                 root = parent;
+
         }
 
+		// 추가로 생성된 더블 레드 확인
+        doubleRed(grand->left);
+        doubleRed(grand->left);
+
+        // 각 노드의 dept 재설정
         updateDepts(root, 0);
 	}
 	else {
@@ -278,7 +319,8 @@ void updateDepts(treeNode* node, int curDept){
     if(!node)
         return;
 
-    node->dept = curDept;
+    node->dept = curDept;  // 현재 노드의 깊이 업데이트
+    // 서브 트리의 깊이 업데이트
     updateDepts(node->left, curDept + 1);
     updateDepts(node->right, curDept + 1);
 }
@@ -303,21 +345,64 @@ treeNode *findPatient(int pid){
         }
     }
 
+    // 환자 정보가 없을 때
     return nullptr;
 }
 
 // 추가 진료 함수
 void addRecord(int pid, record * treat){
 
+    // 환자 정보가 들어있는 노드 탐색
     treeNode *node = findPatient(pid);
 
     if(node){
+        // 트리에 환자 정보가 있는 경우
         treat->next = node->patient->records;
         node->patient->records = treat;
 
         cout << node->dept << "\n";
     }
     else{
+        // 환자 정보가 존재하지 않는 경우
         cout << "Not found\n";
     }
+}
+
+// 유행병 조사 함수
+int findDisease(treeNode* node, const string& disease){
+
+    if(!node->patient)
+        // leaf node
+        return 0;
+
+    // current node count + left subTree count + right subTree count
+    int cnt = (node->patient->records->disease == disease) ? 1 : 0;
+    // get count of subTree by recursion
+    int left = findDisease(node->left, disease);
+    int right = findDisease(node->right, disease);
+
+    return cnt + left + right;
+}
+
+// 트리 제거 함수
+void deleteTree(treeNode* node){
+    // 각 노드와 환자 정보, 진료 기록에 할당된 동적 메모리 삭제
+    if(!node)
+        return;
+
+    if(node->patient){
+        record* next = node->patient->records;
+        while(next){
+            record* prev = next;
+            next = next->next;
+            delete prev;
+        }
+
+        delete node->patient;
+    }
+
+    deleteTree(node->left);
+    deleteTree(node->right);
+
+    delete node;
 }
