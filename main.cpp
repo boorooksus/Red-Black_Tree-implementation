@@ -38,7 +38,8 @@ treeNode *root = &rootNode;
 void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
 void updateDepts(treeNode* node, int curDept);
-void findPatient(int pid);
+treeNode *findPatient(int pid);
+void addRecord(int pid, record * treat);
 
 int main() {
 	cin >> T;
@@ -57,9 +58,34 @@ int main() {
 		}
 		else if (cmd == 'F'){
 		    // 환자 검색
+
 		    int k;
 		    cin >> k;
-		    findPatient(k);
+
+		    treeNode *cur = findPatient(k);
+
+		    if(cur){
+                cout << cur->dept << " " << cur->patient->name << " "
+                     << cur->patient->tel << " " << cur->patient->ax << " "
+                     << cur->patient->ay << "\n";
+		    }
+		    else{
+                cout << "Not found\n";
+		    }
+
+		}
+		else if (cmd == 'A'){
+		    // 추가 진료
+		    string disease;
+		    int k, cost;
+            cin >> k >> disease >> cost;
+            auto *treat = new record;
+            *treat = {disease, cost, nullptr};
+
+            addRecord(k, treat);
+		}
+		else{
+		    cout << "Wrong Command\n";
 		}
 	}
 
@@ -258,7 +284,7 @@ void updateDepts(treeNode* node, int curDept){
 }
 
 // 환자 검색 함수
-void findPatient(int pid){
+treeNode *findPatient(int pid){
     treeNode *cur = root;
 
     // 환자 정보를 찾거나 리프 노드에 도달할 때까지 탐색
@@ -273,12 +299,25 @@ void findPatient(int pid){
         }
         else{
             // 환자 정보를 찾았을 때
-            cout << cur->dept << " " << cur->patient->name << " "
-            << cur->patient->tel << " " << cur->patient->ax << " "
-            << cur->patient->ay << "\n";
-            return;
+            return cur;
         }
     }
 
-    cout << "Not found\n";
+    return nullptr;
+}
+
+// 추가 진료 함수
+void addRecord(int pid, record * treat){
+
+    treeNode *node = findPatient(pid);
+
+    if(node){
+        treat->next = node->patient->records;
+        node->patient->records = treat;
+
+        cout << node->dept << "\n";
+    }
+    else{
+        cout << "Not found\n";
+    }
 }
