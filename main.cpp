@@ -133,6 +133,12 @@ void doubleRed(treeNode * node) {
 			node->right = parent;
 			node->right->parent = node;
 			node->parent = greatGrand;
+			if (greatGrand) {
+                if(greatGrand->left == grand)
+                    greatGrand->left = node;
+                else
+                    greatGrand->right = node;
+            }
             node->color = BLACK;
 
 			if (grand->dept == 0)
@@ -152,6 +158,12 @@ void doubleRed(treeNode * node) {
 			parent->right->parent = parent;
 
 			node->parent = greatGrand;
+            if (greatGrand) {
+                if(greatGrand->left == grand)
+                    greatGrand->left = node;
+                else
+                    greatGrand->right = node;
+            }
 			node->left = parent;
 			node->left->parent = node;
 			node->right = grand;
@@ -170,6 +182,12 @@ void doubleRed(treeNode * node) {
 			grand->color = RED;
 
 			parent->parent = greatGrand;
+            if (greatGrand) {
+                if(greatGrand->left == grand)
+                    greatGrand->left = parent;
+                else
+                    greatGrand->right = parent;
+            }
 			parent->left = node->right;
 			parent->left->parent = parent;
 			parent->color = BLACK;
@@ -187,6 +205,12 @@ void doubleRed(treeNode * node) {
             grand->color = RED;
 
             parent->parent = greatGrand;
+            if (greatGrand) {
+                if(greatGrand->left == grand)
+                    greatGrand->left = parent;
+                else
+                    greatGrand->right = parent;
+            }
             parent->left = grand;
             parent->left->parent = parent;
             parent->color = RED;
@@ -199,7 +223,17 @@ void doubleRed(treeNode * node) {
 	}
 	else {
 		// Recoloring
-		cout << "recoloring\n";
+
+		grand->color = RED;
+		uncle->color = BLACK;
+		parent->color = BLACK;
+
+        // grand node가 root인 경우 색상을 다시 BLACK으로
+        // 아닌 경우 double red인지 확인
+		if (!grand->parent)
+		    grand->color = BLACK;
+		else
+		    doubleRed(grand);
 	}
 
 }
