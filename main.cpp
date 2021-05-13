@@ -47,6 +47,10 @@ int main() {
 	cin >> T;
 	while (T--) {
 		cin >> cmd;
+
+		if(T == 100 - 22)
+		    cout << "hi\n";
+
 		if (cmd == 'I') {
 		    // 신규 가입
 
@@ -150,7 +154,7 @@ void insertPatient(pinfo *p) {
 void doubleRed(treeNode * node) {
 
 	// double red가 아닌 경우 리턴
-	if (!node->parent || node->parent->color == BLACK) {
+	if (node->color == BLACK || !node->parent || node->parent->color == BLACK) {
 		return;
 	}
 
@@ -292,7 +296,7 @@ void doubleRed(treeNode * node) {
 
 		// 추가로 생성된 더블 레드 확인
         doubleRed(grand->left);
-        doubleRed(grand->left);
+        doubleRed(grand->right);
 
         // 각 노드의 dept 재설정
         updateDepts(root, 0);
