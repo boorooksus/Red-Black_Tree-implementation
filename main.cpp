@@ -32,10 +32,12 @@ struct treeNode {
 
 int T;
 char cmd;
-treeNode root = { nullptr, 0, BLACK, nullptr, nullptr, nullptr };
+treeNode rootNode = { nullptr, 0, BLACK, nullptr, nullptr, nullptr };
+treeNode *root = &rootNode;
 
 void insertPatient(pinfo *p);
 void doubleRed(treeNode* node);
+void updateDepts(treeNode* node, int curDept);
 //treeNode findPatient(int pid);
 
 int main() {
@@ -57,7 +59,7 @@ int main() {
 
 void insertPatient(pinfo *p) {
 
-	treeNode *cur = &root;
+	treeNode *cur = root;
 	int curDept = 0;
 
 	while (cur->patient) {
@@ -91,7 +93,7 @@ void insertPatient(pinfo *p) {
 
 	doubleRed(cur);
 
-	cout << curDept << " " << 1 << "\n";
+	cout << cur->dept << " " << 1 << "\n";
 }
 
 // double red handling function
@@ -112,51 +114,102 @@ void doubleRed(treeNode * node) {
 	if (uncle->color == BLACK) {
 		// Restructuring
 
-//		treeNode *x, *y, *z;
-//		treeNode* greatGrand = grand->parent;
-//
-//		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
-//			// right-left case
-//
-//			grand->parent = node;
-//			grand->right = node->left;
-//			parent->parent = node;
-//			parent->left = node->right;
-//			node->left = grand;
-//			node->right = parent;
-//			node->parent = greatGrand;
-//		}
-//		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
-//			// left-right case
-//
-//			grand->parent = node;
-//			grand->left = node->right;
-//			parent->parent = node;
-//			parent->right = node->left;
-//			node->parent = greatGrand;
-//			node->left = parent;
-//			node->right = grand;
-//		}
-//		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
-//			// left-left case
-//
-//			grand->parent = parent;
-//			grand->left = parent->right;
-//			parent->parent = greatGrand;
-//			parent->left = node->right;
-//
-//		}
-//		else {
-//			x = grand;
-//			y = parent;
-//			z = node;
-//		}
+		treeNode* greatGrand = grand->parent;
 
+		if (grand->patient->pid < parent->patient->pid && parent->patient->pid > node->patient->pid) {
+			// right-left case
 
+			grand->parent = node;
+			grand->right = node->left;
+			grand->right->parent = grand;
+			grand->color = RED;
+
+			parent->parent = node;
+			parent->left = node->right;
+			parent->left->parent = parent;
+
+			node->left = grand;
+			node->left->parent = node;
+			node->right = parent;
+			node->right->parent = node;
+			node->parent = greatGrand;
+            node->color = BLACK;
+
+			if (grand->dept == 0)
+			    root = node;
+
+		}
+		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid < node->patient->pid) {
+			// left-right case
+
+			grand->parent = node;
+			grand->left = node->right;
+			grand->left->parent = grand;
+			grand->color = RED;
+
+			parent->parent = node;
+			parent->right = node->left;
+			parent->right->parent = parent;
+
+			node->parent = greatGrand;
+			node->left = parent;
+			node->left->parent = node;
+			node->right = grand;
+			node->right->parent = node;
+			node->color = BLACK;
+
+            if (grand->dept == 0)
+                root = node;
+		}
+		else if (grand->patient->pid > parent->patient->pid && parent->patient->pid > node->patient->pid) {
+			// left-left case
+
+			grand->parent = parent;
+			grand->left = parent->right;
+			grand->left->parent = grand;
+			grand->color = RED;
+
+			parent->parent = greatGrand;
+			parent->left = node->right;
+			parent->left->parent = parent;
+			parent->color = BLACK;
+
+            if (grand->dept == 0)
+                root = parent;
+
+		}
+		else {
+            // right-right case
+
+            grand->parent = parent;
+            grand->right = parent->left;
+            grand->right->parent = grand;
+            grand->color = RED;
+
+            parent->parent = greatGrand;
+            parent->left = grand;
+            parent->left->parent = parent;
+            parent->color = RED;
+
+            if (grand->dept == 0)
+                root = parent;
+        }
+
+        updateDepts(root, 0);
 	}
 	else {
 		// Recoloring
 		cout << "recoloring\n";
 	}
 
-	}
+}
+
+// 트리에서 노드들의 깊이를 업데이트하는 함수
+void updateDepts(treeNode* node, int curDept){
+    if(!node)
+        return;
+
+    node->dept = curDept;
+    updateDepts(node->left, curDept + 1);
+    updateDepts(node->right, curDept + 1);
+}
