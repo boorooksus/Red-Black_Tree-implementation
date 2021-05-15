@@ -14,7 +14,7 @@ struct record {
 struct pinfo {
 	int pid = 0;  // 환자 번호
 	string name;  // 환자 이름
-	int tel = 0;  // 연락처
+	string tel;  // 연락처
 	int ax = 0;  // 주소 x좌표
 	int ay = 0;  // 주소 y좌표
 	record* records = nullptr;  // 진료 기록 연결 리스트 주소
