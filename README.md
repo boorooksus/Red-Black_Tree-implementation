@@ -1,6 +1,6 @@
 ## C++을 이용한 Red-Black Tree 구현 - 환자 관리 프로그램
 
-
+인하대학교 컴퓨터공학과  2021년 1학기 알고리즘 강의 과제
 
 ### 프로젝트 개요
 
@@ -54,11 +54,11 @@
 
 신규 가입 질의가 입력된 경우, pinfo 구조체와 record 구조체를 동적 할당한 후, 환자 정보를 저장한 뒤 ‘insertPatient()’함수에 인자로 넘긴다. ‘insertPatient()’함수는 다음의 flow chart를 가진다.
 
-​     ![image-20210709213303048](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213303048.png)                          
+![image](https://user-images.githubusercontent.com/55964775/125079914-1f385580-e0ff-11eb-9d17-3bf1ce89f582.png)                          
 
 위에서 ‘doubleRed(treeNode* node)’ 함수는 현재 노드와 부모 노드의 컬러가 모두 RED인지 확인하고, 모두 RED라면 이러한 더블 레드 상태를 제거하는 함수이다. 이 함수의 Flow chart는 다음과 같다.
 
-![image-20210709213326240](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213326240.png)
+![image](https://user-images.githubusercontent.com/55964775/125079928-252e3680-e0ff-11eb-8413-80ca912656c1.png)
 
   위 플로우 차트에서 우선 현재 타겟 노드가 더블 레드 상태인지 확인한다. 만약 더블 레드가 아니라면 함수를 종료하고, 더블 레드라면 타겟 노드의 uncle 노드의 컬러를 확인한다. uncle 노드의 컬러가 블랙이 아니라면 Recoloring 작업을 하고, 블랙이라면 Restructuring 작업을 한다.
 
@@ -66,15 +66,15 @@ Recoloring 작업은 grand 노드의 자식 노드들의 컬러를 모두 블랙
 
  Resturcturing 작업은 현재 노드, 부모 노드, grand 노드의 구조를 바꾸는 것이다. 
 
- ![image-20210709213341769](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213341769.png)
+![image](https://user-images.githubusercontent.com/55964775/125079953-2d867180-e0ff-11eb-8476-7825c20854ae.png)
 
   위의 4개에 case 별로 다르게 처리하여 아래의 트리 구조로 변경한다.
 
- ![image-20210709213352140](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213352140.png)
+![image](https://user-images.githubusercontent.com/55964775/125079971-324b2580-e0ff-11eb-9712-3271ff6e435b.png)
 
 트리 구조를 변경한 뒤에는 ‘updateDept()’ 함수를 이용하여 각 노드들의 깊이를 업데이트 한다. ‘updateDept()’의 플로우 차트는 다음과 같다.
 
- ![image-20210709213400678](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213400678.png)
+ ![image](https://user-images.githubusercontent.com/55964775/125079983-35deac80-e0ff-11eb-8b4f-acad30c19bf6.png)
 
 위에서 현재 노드의 dept 값을 업데이트 하고 자식 노드들에 대해 ‘updateDept()’ 함수를 재귀적으로 실행하여 각 노드들의 dept를 업데이트한다.
 
@@ -108,7 +108,7 @@ Recoloring 작업은 grand 노드의 자식 노드들의 컬러를 모두 블랙
 
  프로그램이 실행되면 먼저 다음과 같이 질의의 개수를 입력한다.
 
-![image-20210709213501705](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213501705.png)
+![image](https://user-images.githubusercontent.com/55964775/125079997-3a0aca00-e0ff-11eb-85c1-f626e4c22973.png)
 
 질의 개수를 입력한 뒤에는 원하는 기능의 질의를 조건에 맞게 입력한다. 
 
@@ -116,25 +116,25 @@ Recoloring 작업은 grand 노드의 자식 노드들의 컬러를 모두 블랙
 
 신규 가입 기능을 원할 경우 다음과 같이 문자 ‘I’, 환자 번호, 환자 이름, 연락처, 주소 x좌표, 주소 y좌표, 병명, 진료비 순서대로 입력한다. 각 정보는 띄어쓰기로 구분한다. 정보를 입력한 뒤에는 결과가 출력된다. 환자가 신규 가입에 성공할 경우 입력된 노드의 깊이와 ‘1’이 출력되고, 이미 환자 번호가 존재하여 신규 가입이 실패한 경우, 해당 환자 번호가 존재하는 노드 깊이와 ‘0’이 출력된다.
 
-![image-20210709213513189](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213513189.png)
+![image](https://user-images.githubusercontent.com/55964775/125080002-3d05ba80-e0ff-11eb-9be8-a88e4fcc3662.png)
 
 2)   환자 검색 기능
 
  환자 검색 기능을 사용할 경우 문자 ‘F’와 환자 번호를 띄어쓰기로 구분하여 입력한다. 해당 환자가 존재할 경우, 트리에서 환자 정보가 저장된 노드의 깊이와 환자 이름, 연락처, 주소 x좌표, 주소 y좌표 순서대로 띄어쓰기로 구분하여 출력한다. 만약 존재하지 않을 경우 ‘Not found’를 출력한다.
 
-![image-20210709213523823](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213523823.png)
+![image](https://user-images.githubusercontent.com/55964775/125080015-3f681480-e0ff-11eb-8794-db08d61a9f9e.png)
 
 3)   추가 진료 기능
 
 추가 진료 기능은 문자 ‘A’, 환자 번호, 병명, 진료비 순서에 띄어쓰기로 구분하여 입력한다. 트리에서 환자 정보를 찾아 진료 기록을 추가한 경우 해당 노드의 깊이를 출력하고, 트리에 환자 정보가 존재하지 않아 추가에 실패한 경우 ‘Not found’를 출력한다.
 
-![image-20210709213539429](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213539429.png)
+![image](https://user-images.githubusercontent.com/55964775/125080019-41ca6e80-e0ff-11eb-9361-8f1bf8a494eb.png)
 
 4)   유행병 조사 기능
 
 유행병 조사 기능을 실행하기 위해서는 문자 ‘E’, 병명 순서대로 띄어쓰기 구분하여 입력한다. 그 다음 프로그램은 트리에 저장된 모든 환자들에 대해서 마지막으로 진단 받은 병명과 입력된 병명이 같으면 집계하고, 집계된 수를 출력한다. 다만 편의상, 골절 같은 전염성이 없는 병명도 유행병으로 간주한다.
 
-![image-20210709213551925](C:\Users\booro\AppData\Roaming\Typora\typora-user-images\image-20210709213551925.png)
+![image](https://user-images.githubusercontent.com/55964775/125080026-44c55f00-e0ff-11eb-8506-ce1e046f481b.png)
 
 
 
